@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useSyncExternalStore } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 
 import { ArrowRightIcon } from '@heroicons/react/20/solid'
@@ -13,6 +13,9 @@ export interface NavBarProps {
   destinationStation: Station,
 }
 
+const subscribe = () => () => {}
+const getServerSnapshot = () => false
+
 const NavBar = ({
   sourceStation,
   destinationStation,
@@ -20,24 +23,24 @@ const NavBar = ({
   const router = useRouter()
   const pathname = usePathname()
 
-  const [standalone, setStandalone] = useState(false)
-  const [canShare, setCanShare] = useState(false)
+  const standalone = useSyncExternalStore(
+    subscribe,
+    () => navigator.standalone === true
+      || window.matchMedia('(display-mode: standalone)').matches,
+    getServerSnapshot,
+  )
 
   const shareData = {
     url: pathname,
     title: `${sourceStation.name} to ${destinationStation.name} | WhichDoorBest`,
   }
 
-  useEffect(() => {
-    setStandalone(
-      navigator.standalone === true
-      || window.matchMedia('(display-mode: standalone)').matches,
-    )
-    setCanShare(
-      typeof navigator.canShare === 'function'
+  const canShare = useSyncExternalStore(
+    subscribe,
+    () => typeof navigator.canShare === 'function'
       && navigator.canShare(shareData),
-    )
-  }, [shareData.url, shareData.title])
+    getServerSnapshot,
+  )
 
   return (
     <div className="flex flex-col sticky top-0 w-[100dvw] text-indigo-50 bg-indigo-500 border-b-4 border-indigo-900 z-[100]">
