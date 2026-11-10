@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 
 import { ArrowRightIcon } from '@heroicons/react/20/solid'
@@ -19,15 +20,29 @@ const NavBar = ({
   const router = useRouter()
   const pathname = usePathname()
 
+  const [standalone, setStandalone] = useState(false)
+  const [canShare, setCanShare] = useState(false)
+
   const shareData = {
     url: pathname,
     title: `${sourceStation.name} to ${destinationStation.name} | WhichDoorBest`,
   }
 
+  useEffect(() => {
+    setStandalone(
+      navigator.standalone === true
+      || window.matchMedia('(display-mode: standalone)').matches,
+    )
+    setCanShare(
+      typeof navigator.canShare === 'function'
+      && navigator.canShare(shareData),
+    )
+  }, [shareData.url, shareData.title])
+
   return (
     <div className="flex flex-col sticky top-0 w-[100dvw] text-indigo-50 bg-indigo-500 border-b-4 border-indigo-900 z-[100]">
       {
-        (navigator.standalone || matchMedia('(display-mode: standalone)').matches) && (
+        standalone && (
           <div className="flex items-center justify-between py-2">
             <div className="flex ml-3" onClick={() => router.back()}>
               <ChevronLeftIcon className="h-6 w-6" />
@@ -35,7 +50,7 @@ const NavBar = ({
             </div>
 
             {
-              navigator.canShare && navigator.canShare(shareData) && (
+              canShare && (
                 <ArrowUpOnSquareIcon className="h-6 w-6 mr-4" onClick={() => navigator.share(shareData)} />
               )
             }
