@@ -1,7 +1,7 @@
 import 'server-only'
 
 import { Fragment } from 'react'
-import { Metadata } from 'next'
+import { Metadata, Viewport } from 'next'
 import { notFound } from 'next/navigation'
 
 import PriorityQueue from 'priorityqueue'
@@ -18,7 +18,7 @@ import stationFromData from '@/utils/stationFromData'
 type PlatformData = typeof platformsData[number]
 type StationData = typeof stationsData[number]
 
-export const metadata: Metadata = {
+export const viewport: Viewport = {
   themeColor: '#6366f1',
 }
 interface QueueItem {
@@ -92,14 +92,16 @@ const route = (source: StationData[], destination: StationData[]) => {
   return []
 }
 
-export default function Route({
+export default async function Route({
   params,
 } : {
-  params: {
+  params: Promise<{
     source: string,
     destination: string,
-  }
+  }>
 }) {
+  const { source, destination } = await params
+
   let sourceStations: StationData[] = []
   let destinationStations: StationData[] = []
 
@@ -107,8 +109,8 @@ export default function Route({
     const [, ...nameParts] = stationData.station.split(' ')
     const name = nameParts.join(' ')
 
-    if (normalizeStationName(name) === params.source) sourceStations.push(stationData)
-    if (normalizeStationName(name) === params.destination) destinationStations.push(stationData)
+    if (normalizeStationName(name) === source) sourceStations.push(stationData)
+    if (normalizeStationName(name) === destination) destinationStations.push(stationData)
   }
 
   if (sourceStations.length === 0 || destinationStations.length === 0) notFound()

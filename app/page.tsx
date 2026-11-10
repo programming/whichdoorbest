@@ -1,7 +1,7 @@
 import 'server-only'
 
 import Image from 'next/image'
-import { Metadata } from 'next'
+import { Viewport } from 'next'
 
 import icon from '@/public/img/icon.png'
 import stationsData from '@/data/stations.json'
@@ -9,7 +9,7 @@ import stationsData from '@/data/stations.json'
 import StationsSelector from '@/components/StationsSelector'
 import { Line, type Station } from '@/@types/station'
 
-export const metadata: Metadata = {
+export const viewport: Viewport = {
   themeColor: '#d6dbdc',
 }
 
