@@ -1,7 +1,6 @@
 // default open-next.config.ts file created by @opennextjs/cloudflare
+// This app has no ISR/on-demand revalidation, so no incremental cache is
+// configured. That keeps the deployment free-tier only (no R2 bucket needed).
 import { defineCloudflareConfig } from "@opennextjs/cloudflare";
-import r2IncrementalCache from "@opennextjs/cloudflare/overrides/incremental-cache/r2-incremental-cache";
 
-export default defineCloudflareConfig({
-	incrementalCache: r2IncrementalCache,
-});
+export default defineCloudflareConfig({});
